@@ -8,7 +8,7 @@ export default function SignalingServerInput({ url, setUrl }: Props) {
     const [isValid, setIsValid] = useState<boolean | null>(null);
     const checkUrl = () => {
         setIsValid(null);
-        fetch(url).then(() => setIsValid(true)).catch(() => setIsValid(false));
+        fetch(`${url}/alive`).then(() => setIsValid(true)).catch(() => setIsValid(false));
     };
     useEffect(() => {
         checkUrl();

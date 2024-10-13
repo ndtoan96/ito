@@ -1,22 +1,11 @@
 import { useEffect } from "react";
+import config from '../appConfig.ts';
 
 type Props = {
     file: File;
     serverUrl: string;
 };
 
-const config: RTCConfiguration = {
-    iceServers: [
-        {
-            urls: [
-                "stun:stun.l.google.com:19302",
-                "stun:stun1.l.google.com:19302",
-                "stun:stun2.l.google.com:19302",
-                "stun:stun3.l.google.com:19302",
-            ]
-        },
-    ]
-};
 
 export default function SharedFile({ file, serverUrl }: Props) {
     const id = Math.random().toString(36).substring(2, 10) + (new Date()).getTime().toString(36);
@@ -24,18 +13,22 @@ export default function SharedFile({ file, serverUrl }: Props) {
     useEffect(() => {
         const eventSource = new EventSource(`${serverUrl}/sse/${id}`);
         let peerId: string | null = null;
-        const pc = new RTCPeerConnection(config);
+        const pc = new RTCPeerConnection(config.rtcConfig);
         pc.onconnectionstatechange = (_event) => {
             console.log(pc.connectionState);
         };
         pc.ondatachannel = (event) => {
             const channel = event.channel;
             channel.onopen = () => {
-                console.log("data channel open");
                 const reader = new FileReader();
                 reader.onload = () => {
-                    channel.send(reader.result as ArrayBuffer);
+                    let data = reader.result as ArrayBuffer;
+                    channel.send(data);
                 };
+                // for (let offset = 0; offset < file.size; offset += config.chunkSize) {
+                //     reader.readAsArrayBuffer(file.slice(offset, offset + config.chunkSize));
+                // }
+                // channel.close();
                 reader.readAsArrayBuffer(file);
             };
         };

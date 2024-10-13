@@ -14,8 +14,8 @@ const channels: Record<string, ServerSentEventTarget> = {};
 
 const router = new Router();
 
-router.get("/", (ctx) => {
-  ctx.response.body = "Hello from signaling server!";
+router.get("/alive", (ctx) => {
+  ctx.response.body = true;
 });
 
 router.get("/:id", (ctx) => {

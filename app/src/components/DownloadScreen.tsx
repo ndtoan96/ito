@@ -1,22 +1,12 @@
 import { useEffect, useState } from "react";
+import config from "../appConfig.ts";
 
 type Props = {
     ticket: string;
     serverUrl: string;
 };
 
-const config: RTCConfiguration = {
-    iceServers: [
-        {
-            urls: [
-                "stun:stun.l.google.com:19302",
-                "stun:stun1.l.google.com:19302",
-                "stun:stun2.l.google.com:19302",
-                "stun:stun3.l.google.com:19302",
-            ]
-        },
-    ]
-};
+
 
 let globalFileName: string | null = null;
 
@@ -25,7 +15,7 @@ export default function DownloadScreen({ ticket, serverUrl }: Props) {
     const id = Math.random().toString(36).substring(2, 10) + (new Date()).getTime().toString(36);
     useEffect(() => {
         const eventSource = new EventSource(`${serverUrl}/sse/${id}`);
-        const pc = new RTCPeerConnection(config);
+        const pc = new RTCPeerConnection(config.rtcConfig);
         pc.onicecandidate = (event) => {
             if (event.candidate) {
                 console.log("got candidate");
@@ -54,7 +44,6 @@ export default function DownloadScreen({ ticket, serverUrl }: Props) {
             }
             if (data.answer) {
                 setFileName(data.fileName);
-                console.log("got answer");
                 pc.setRemoteDescription(data.answer);
             }
             if (data.candidate) {
@@ -63,9 +52,6 @@ export default function DownloadScreen({ ticket, serverUrl }: Props) {
         };
 
         let channel = pc.createDataChannel("download-channel");
-        channel.onopen = () => {
-            console.log("data channel open");
-        };
         channel.onmessage = (event) => {
             const blob = new Blob([event.data], { type: "application/octet-stream" });
             const url = URL.createObjectURL(blob);
