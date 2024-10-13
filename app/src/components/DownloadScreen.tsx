@@ -18,6 +18,8 @@ const config: RTCConfiguration = {
     ]
 };
 
+let globalFileName: string | null = null;
+
 export default function DownloadScreen({ ticket, serverUrl }: Props) {
     const [fileName, setFileName] = useState<string | null>(null);
     const id = Math.random().toString(36).substring(2, 10) + (new Date()).getTime().toString(36);
@@ -44,39 +46,35 @@ export default function DownloadScreen({ ticket, serverUrl }: Props) {
                 });
             });
         };
-        pc.createOffer().then((offer) => {
-            pc.setLocalDescription(offer);
-            fetch(`${serverUrl}/${ticket}`, {
-                method: "POST",
-                body: JSON.stringify({ from: id, offer: offer }),
-            });
+        eventSource.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.fileName) {
+                setFileName(data.fileName);
+                globalFileName = data.fileName;
+            }
+            if (data.answer) {
+                setFileName(data.fileName);
+                console.log("got answer");
+                pc.setRemoteDescription(data.answer);
+            }
+            if (data.candidate) {
+                pc.addIceCandidate(data.candidate);
+            }
+        };
 
-            eventSource.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                if (data.answer && data.fileName) {
-                    setFileName(data.fileName);
-                    console.log("got answer");
-                    pc.setRemoteDescription(data.answer).then(() => {
-                        let channel = pc.createDataChannel("download-channel");
-                        channel.onopen = () => {
-                            console.log("data channel open");
-                        };
-                        channel.onmessage = (event) => {
-                            const blob = new Blob([event.data], { type: "application/octet-stream" });
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement("a");
-                            a.href = url;
-                            a.download = data.fileName;
-                            a.click();
-                            URL.revokeObjectURL(url);
-                        };
-                    });
-                }
-                if (data.candidate) {
-                    pc.addIceCandidate(data.candidate);
-                }
-            };
-        });
+        let channel = pc.createDataChannel("download-channel");
+        channel.onopen = () => {
+            console.log("data channel open");
+        };
+        channel.onmessage = (event) => {
+            const blob = new Blob([event.data], { type: "application/octet-stream" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = globalFileName!;
+            a.click();
+            URL.revokeObjectURL(url);
+        };
     }, []);
     return (
         <div>
