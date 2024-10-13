@@ -16,17 +16,14 @@ export default function DownloadScreen({ ticket, serverUrl }: Props) {
     useEffect(() => {
         const eventSource = new EventSource(`${serverUrl}/sse/${id}`);
         const pc = new RTCPeerConnection(config.rtcConfig);
+
         pc.onicecandidate = (event) => {
             if (event.candidate) {
-                console.log("got candidate");
                 fetch(`${serverUrl}/${ticket}`, {
                     method: "POST",
                     body: JSON.stringify({ candidate: event.candidate }),
                 });
             }
-        };
-        pc.onconnectionstatechange = (_event) => {
-            console.log(pc.connectionState);
         };
         pc.onnegotiationneeded = () => {
             pc.setLocalDescription().then(() => {

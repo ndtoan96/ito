@@ -1,5 +1,5 @@
 export default {
-    defaultServerUrl: "http://localhost:8000",
+    defaultServerUrl: "https://ndtoan96-ito.deno.dev",
     rtcConfig: {
         iceServers: [
             {
