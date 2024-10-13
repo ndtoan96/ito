@@ -34,11 +34,11 @@ jobs:
         uses: actions/setup-node@v3
 
       - name: Install dependencies
-        run: pnpm install
+        run: npm install
         working-directory: ./app
 
       - name: Build project
-        run: pnpm run build
+        run: npm run build
         working-directory: ./app
 
       - name: Upload production-ready build files
