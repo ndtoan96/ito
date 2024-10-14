@@ -40,7 +40,6 @@ router.get("/sse/:id", async (ctx) => {
     ctx.response.body = "Id already exists";
     return;
   }
-  ctx.response.headers.set("content-type", "application/json");
   ctx.response.status = 202;
   const id = ctx.params.id;
   const target = await ctx.sendEvents();
