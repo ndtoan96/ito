@@ -4,10 +4,30 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="./ito.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ito - P2P File Sharing</title>
+    <title>BareShare</title>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <div>
+      <input type="text" name="server" id="server-input" value="http://localhost:8000" />
+      <span id="server-status"></span>
+      <button id="connect-button">Connect</button>
+    </div>
+    <div>
+      <input type="file" name="file" id="file-input" />
+    </div>
+    <div>
+      <span id="file-size"></span>
+    </div>
+    <div>
+      <span id="ticket"></span>
+    </div>
+    <div id="send-status"></div>
+    <div>
+      <input type="text" name="ticket" id="ticket-input" />
+      <button id="download-button">Download</button>
+    </div>
+    <div id="download-status"></div>
+    <div id="speed"></div>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

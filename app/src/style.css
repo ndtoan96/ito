@@ -1,0 +1,16 @@
+.code {
+    font-family: monospace;
+    font-size: 1em;
+    white-space: pre;
+    background-color: #f8f8f8;
+    color: #333;
+    padding: 0.2em;
+}
+
+.server-alive {
+    color: green;
+}
+
+.server-dead {
+    color: red;
+}
