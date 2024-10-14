@@ -74,7 +74,6 @@ const pc = new RTCPeerConnection({
 
 document.querySelector<HTMLButtonElement>("#connect-button")!.onclick =
   connectServer;
-connectServer();
 
 document.querySelector<HTMLInputElement>("#file-input")?.addEventListener(
   "change",
@@ -261,3 +260,5 @@ async function downloadTicket(ticket: string) {
     }
   };
 }
+
+connectServer();
